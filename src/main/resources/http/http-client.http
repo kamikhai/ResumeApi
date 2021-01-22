@@ -1,0 +1,81 @@
+POST http://localhost:8080/api/signup
+Content-Type: application/json
+
+{
+  "surname": "Ivanov",
+  "name": "Ivan",
+  "patronymic": "Ivanovich",
+  "email": "ivanov.ivan@gmail.com",
+  "password": "qwerty"
+}
+
+###
+POST http://localhost:8080/api/signin
+Content-Type: application/json
+
+{
+  "email": "ivanov.ivan@gmail.com",
+  "password": "qwerty"
+}
+
+### Добавим администратора и вручную поменяем его роль в таблице
+POST http://localhost:8080/api/signup
+Content-Type: application/json
+
+{
+  "surname": "Admin",
+  "name": "Admin",
+  "patronymic": "Admin",
+  "email": "admin@gmail.com",
+  "password": "qwerty"
+}
+
+###
+POST http://localhost:8080/api/signin
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "qwerty"
+}
+
+###
+POST http://localhost:8080/api/resume
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDBiM2U1Y2NiM2E5ZDA3ZTllMTYxMmEiLCJlbWFpbCI6Iml2YW5vdi5pdmFuQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIn0.Gt6Y_gDWtNddEvaldovLIcXaRqcRUx3Nn83lyqKKbqc
+
+{
+  "birthDate": "1998-01-01",
+  "phoneNumber": "+79996665555",
+  "education": "Institute of Information Technologies and Intelligent Systems",
+  "workExperience": "2 years of commercial development",
+  "skills": "I've been developing in Java for over 5 years, I know PostgreSQL"
+}
+
+###
+PUT http://localhost:8080/api/resume/600b3ea0cb3a9d07e9e1612c
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDBiM2U1Y2NiM2E5ZDA3ZTllMTYxMmEiLCJlbWFpbCI6Iml2YW5vdi5pdmFuQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIn0.Gt6Y_gDWtNddEvaldovLIcXaRqcRUx3Nn83lyqKKbqc
+
+{
+  "birthDate": "1998-01-01",
+  "phoneNumber": "+79994443333",
+  "education": "Institute of Information Technologies and Intelligent Systems",
+  "workExperience": "2 years of commercial development",
+  "skills": "I've been developing in Java for over 5 years, I know PostgreSQL"
+}
+
+###
+GET http://localhost:8080/api/resume
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDBiM2U4NmNiM2E5ZDA3ZTllMTYxMmIiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIn0.7KSe4xim_aXRcc1xmTnCN8OszE5zq3rmTvmz1Kpa-3Y
+
+###
+GET http://localhost:8080/api/resume/600b3ea0cb3a9d07e9e1612c
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDBiM2U4NmNiM2E5ZDA3ZTllMTYxMmIiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIn0.7KSe4xim_aXRcc1xmTnCN8OszE5zq3rmTvmz1Kpa-3Y
+
+###
+DELETE http://localhost:8080/api/resume/600b3ea0cb3a9d07e9e1612c
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDBiM2U1Y2NiM2E5ZDA3ZTllMTYxMmEiLCJlbWFpbCI6Iml2YW5vdi5pdmFuQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIn0.Gt6Y_gDWtNddEvaldovLIcXaRqcRUx3Nn83lyqKKbqc
+
+
+

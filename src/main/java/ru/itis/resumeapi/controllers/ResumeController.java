@@ -40,17 +40,15 @@ public class ResumeController {
     // далее совершается проверка, является ли пользователь администратором или владельцем резюме
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") String id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+    public ResponseEntity<?> findById(@PathVariable("id") String id, Authentication authentication) {
+        User user = ((UserDetailsImpl)authentication.getPrincipal()).getUser();
         Optional<Resume> resumeCandidate = resumeService.findById(id, user);
         return resumeCandidate.isPresent() ? ResponseEntity.ok(ResumeDto.fromResume(resumeCandidate.get())) : ResponseEntity.status(404).body("There is no resume with the given id");
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateResume(@PathVariable("id") String id, @RequestBody CreateResumeDto createResumeDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<?> updateResume(@PathVariable("id") String id, @RequestBody CreateResumeDto createResumeDto, Authentication authentication) {
         User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
         Optional<Resume> resumeCandidate = resumeService.update(id, createResumeDto, user);
         return resumeCandidate.isPresent() ? ResponseEntity.ok(ResumeDto.fromResume(resumeCandidate.get())) : ResponseEntity.status(404).body("Incorrect data entered");
@@ -59,8 +57,7 @@ public class ResumeController {
     // далее совершается проверка, является ли пользователь администратором или владельцем резюме
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteResume(@PathVariable("id") String id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<?> deleteResume(@PathVariable("id") String id, Authentication authentication) {
         User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
         return resumeService.delete(id, user) ? ResponseEntity.ok().build() : ResponseEntity.status(404).body("There is no resume with the given id");
     }

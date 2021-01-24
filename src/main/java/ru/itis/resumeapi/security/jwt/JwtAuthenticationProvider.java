@@ -11,15 +11,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.itis.resumeapi.models.User;
+import ru.itis.resumeapi.repositories.UserRepository;
 import ru.itis.resumeapi.security.details.UserDetailsImpl;
-import ru.itis.resumeapi.services.UserService;
 
 import java.util.Optional;
 
-@Component("jwtAuthenticationProvider")
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider implements AuthenticationProvider {
-    private final UserService userService;
+    private final UserRepository userRepository;
     @Value("${jwt.secret}")
     private String secret;
 
@@ -31,13 +31,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         try {
             claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token)
                     .getBody();
-            Optional<User> userCandidate = userService.findById(claims.get("sub", String.class));
+            Optional<User> userCandidate = userRepository.findById(claims.get("sub", String.class));
+            if (userCandidate.isPresent()) {
                 UserDetails userDetails = UserDetailsImpl.builder()
                         .user(userCandidate.get())
                         .build();
                 authentication.setAuthenticated(true);
                 ((JwtAuthentication) authentication).setUserDetails(userDetails);
-                return authentication;
+            }
+            return authentication;
         } catch (Exception e) {
             throw new AuthenticationCredentialsNotFoundException("Bad token");
         }

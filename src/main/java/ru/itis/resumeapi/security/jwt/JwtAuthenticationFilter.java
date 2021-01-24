@@ -1,33 +1,49 @@
 package ru.itis.resumeapi.security.jwt;
 
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component( "jwtAuthenticationFilter")
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    public JwtAuthenticationFilter() {
+        super("/**");
+    }
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-                         FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest)servletRequest;
-        String token = null;
-        token = request.getHeader("Authorization");
-        if (token != null){
-            SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse httpServletResponse)
+            throws AuthenticationException {
+        String token;
+        try {
+            token = request.getHeader("Authorization");
+            if (token != null) {
+                Authentication authentication = new JwtAuthentication(token);
+                return getAuthenticationManager().authenticate(authentication);
+            } else {
+                return SecurityContextHolder.getContext().getAuthentication();
+            }
+        } catch (Exception e) {
+            System.out.println("Bad token");
         }
-        filterChain.doFilter(servletRequest, servletResponse);
+        return null;
     }
 
-    protected Authentication createAuthentication(String token) {
-        Authentication authentication = new JwtAuthentication(token);
-        return authentication;
+    @Override
+    protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
+                                            final FilterChain chain, final Authentication authResult)
+            throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        this.getRememberMeServices().loginSuccess(request, response, authResult);
+        if (this.eventPublisher != null) {
+            eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
+        }
+        chain.doFilter(request, response);
     }
 }
